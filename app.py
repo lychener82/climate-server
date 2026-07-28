@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
@@ -16,6 +16,19 @@ def health():
     return {
         "status": "ok"
     }
+
+
+@app.route("/api/measurements", methods=["POST"])
+def measurements():
+
+    data = request.get_json()
+
+    print("Neue Messung:")
+    print(data)
+
+    return jsonify({
+        "status": "ok"
+    })
 
 
 if __name__ == "__main__":
