@@ -1,6 +1,8 @@
 from flask import Flask
 from routes.measurements import bp
+from database import test_connection
 app=Flask(__name__)
+test_connection()
 app.register_blueprint(bp)
 @app.get("/")
 def home(): return {"service":"Climate Server","status":"running"}
