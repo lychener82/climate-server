@@ -238,6 +238,37 @@ function updateChart(
     chart.update();
 }
 
+function initializeRangeSelector() {
+    const buttons = document.querySelectorAll(
+        "#range-selector button[data-range]"
+    );
+
+    buttons.forEach((button) => {
+        button.addEventListener("click", async () => {
+            const newRange = button.dataset.range;
+
+            if (!newRange || newRange === selectedRange) {
+                return;
+            }
+
+            selectedRange = newRange;
+
+            buttons.forEach((item) => {
+                const isActive = item.dataset.range === selectedRange;
+
+                item.classList.toggle("active", isActive);
+                item.setAttribute(
+                    "aria-pressed",
+                    String(isActive)
+                );
+            });
+
+            await loadMeasurements();
+        });
+    });
+}
+
+initializeRangeSelector();
 loadMeasurements();
 
 // Alle 60 Sekunden aktualisieren
