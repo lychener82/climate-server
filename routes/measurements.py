@@ -10,7 +10,6 @@ from models import Measurement
 
 bp = Blueprint("measurements", __name__)
 
-
 @bp.post("/api/measurements")
 def create_measurement():
     data = request.get_json(silent=True)
