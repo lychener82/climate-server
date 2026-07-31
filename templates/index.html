@@ -69,30 +69,41 @@
         </div>
     </section>
 
-    <section class="chart-section">
-        <h2>temperature</h2>
-        <div class="rule" aria-hidden="true">
-            ────────────────────────────────────────────────────────────
-        </div>
-        <canvas id="temperatureChart"></canvas>
-    </section>
+<section class="view-section">
 
-    <section class="chart-section">
-        <h2>humidity</h2>
-        <div class="rule" aria-hidden="true">
-            ────────────────────────────────────────────────────────────
-        </div>
-        <canvas id="humidityChart"></canvas>
-    </section>
+    <div class="section-label">DATA</div>
 
-    <section class="chart-section">
-        <h2>pressure</h2>
-        <div class="rule" aria-hidden="true">
-            ────────────────────────────────────────────────────────────
-        </div>
-        <canvas id="pressureChart"></canvas>
-    </section>
+    <div class="view-selector" id="view-selector">
 
+        <button
+            class="active"
+            data-view="temperature">
+            temperature
+        </button>
+
+        <button
+            data-view="humidity">
+            humidity
+        </button>
+
+        <button
+            data-view="pressure">
+            pressure
+        </button>
+
+    </div>
+
+</section>
+
+<section class="chart-section">
+
+    <div class="rule">
+────────────────────────────────────────────────────────────
+    </div>
+
+    <canvas id="mainChart"></canvas>
+
+</section>
 </main>
 
 <script src="{{ url_for('static', filename='app.js') }}"></script>
