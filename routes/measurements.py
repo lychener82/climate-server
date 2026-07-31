@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from flask import Blueprint, jsonify, request
 from sqlalchemy import select
@@ -7,6 +7,17 @@ from sqlalchemy.exc import SQLAlchemyError
 from database import SessionLocal
 from models import Measurement
 
+RANGES = {
+    "1H": timedelta(hours=1),
+    "6H": timedelta(hours=6),
+    "1D": timedelta(hours=24),
+    "1W": timedelta(days=7),
+    "1M": timedelta(days=30),
+    "3M": timedelta(days=90),
+    "6M": timedelta(days=180),
+    "1Y": timedelta(days=365),
+    "5Y": timedelta(days=365 * 5),
+}
 
 bp = Blueprint("measurements", __name__)
 
@@ -85,18 +96,36 @@ def create_measurement():
 @bp.get("/api/measurements")
 def get_measurements():
     try:
-        limit = request.args.get("limit", default=100, type=int)
+        selected_range = request.args.get(
+            "range",
+            default="1D",
+            type=str
+        ).upper()
 
-        if limit is None or limit < 1:
-            limit = 100
+        allowed_ranges = [*RANGES.keys(), "ALL"]
 
-        limit = min(limit, 1000)
+        if selected_range not in allowed_ranges:
+            return jsonify({
+                "status": "error",
+                "message": "Invalid range",
+                "allowed_ranges": allowed_ranges
+            }), 400
 
         with SessionLocal() as session:
-            statement = (
-                select(Measurement)
-                .order_by(Measurement.timestamp.desc())
-                .limit(limit)
+            statement = select(Measurement)
+
+            if selected_range != "ALL":
+                cutoff = (
+                    datetime.now(timezone.utc)
+                    - RANGES[selected_range]
+                )
+
+                statement = statement.where(
+                    Measurement.timestamp >= cutoff
+                )
+
+            statement = statement.order_by(
+                Measurement.timestamp.asc()
             )
 
             measurements = session.scalars(statement).all()
@@ -111,7 +140,7 @@ def get_measurements():
                     "pressure": measurement.pressure,
                     "rssi": measurement.rssi
                 }
-                for measurement in reversed(measurements)
+                for measurement in measurements
             ]
 
         return jsonify(result), 200
