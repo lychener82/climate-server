@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask import Blueprint, jsonify, request
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
 from database import SessionLocal
@@ -62,10 +63,11 @@ def create_measurement():
             session.add(measurement)
             session.commit()
             session.refresh(measurement)
+            measurement_id = measurement.id
 
         return jsonify({
             "status": "ok",
-            "id": measurement.id
+            "id": measurement_id
         }), 201
 
     except (TypeError, ValueError):
@@ -73,6 +75,47 @@ def create_measurement():
             "status": "error",
             "message": "Invalid measurement values"
         }), 400
+
+    except SQLAlchemyError:
+        return jsonify({
+            "status": "error",
+            "message": "Database error"
+        }), 500
+
+
+@bp.get("/api/measurements")
+def get_measurements():
+    try:
+        limit = request.args.get("limit", default=100, type=int)
+
+        if limit is None or limit < 1:
+            limit = 100
+
+        limit = min(limit, 1000)
+
+        with SessionLocal() as session:
+            statement = (
+                select(Measurement)
+                .order_by(Measurement.timestamp.desc())
+                .limit(limit)
+            )
+
+            measurements = session.scalars(statement).all()
+
+            result = [
+                {
+                    "id": measurement.id,
+                    "device": measurement.device,
+                    "timestamp": measurement.timestamp.isoformat(),
+                    "temperature": measurement.temperature,
+                    "humidity": measurement.humidity,
+                    "pressure": measurement.pressure,
+                    "rssi": measurement.rssi
+                }
+                for measurement in reversed(measurements)
+            ]
+
+        return jsonify(result), 200
 
     except SQLAlchemyError:
         return jsonify({
