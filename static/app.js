@@ -46,13 +46,34 @@ function updateCards(data) {
 }
 
 function formatTime(timestamp) {
-    return new Date(timestamp).toLocaleTimeString(
-        "de-DE",
-        {
-            hour: "2-digit",
-            minute: "2-digit"
-        }
-    );
+
+    const date = new Date(timestamp);
+
+    switch (selectedRange) {
+
+        case "1H":
+        case "6H":
+        case "1D":
+            return date.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+        case "1W":
+        case "1M":
+            return date.toLocaleDateString([], {
+                day: "2-digit",
+                month: "2-digit"
+            });
+
+        default:
+            return date.toLocaleDateString([], {
+                month: "short",
+                year: "2-digit"
+            });
+
+    }
+
 }
 
 function formatDateTime(timestamp) {
@@ -141,14 +162,7 @@ function updateCharts(data) {
     }
 }
 
-function createChart(
-    canvasId,
-    label,
-    values,
-    labels,
-    fullTimestamps,
-    unit
-) {
+function createChart(canvasId, label, labels, values, fullTimestamps, unit) {
     return new Chart(
         document.getElementById(canvasId),
         {
@@ -156,23 +170,31 @@ function createChart(
 
             data: {
                 labels: labels,
-
                 datasets: [{
                     label: label,
                     data: values,
                     fullTimestamps: fullTimestamps,
-                    unit: unit,
-                    tension: 0.3,
+
+                    borderColor: "#111111",
+                    backgroundColor: "transparent",
+
+                    borderWidth: 1,
+
                     pointRadius: 0,
-                    pointHoverRadius: 4,
-                    borderWidth: 2,
-                    fill: false
+                    pointHoverRadius: 3,
+                    pointHitRadius: 10,
+
+                    tension: 0.15
                 }]
             },
 
             options: {
+
                 responsive: true,
+
                 maintainAspectRatio: false,
+
+                animation: false,
 
                 interaction: {
                     mode: "index",
@@ -180,64 +202,94 @@ function createChart(
                 },
 
                 plugins: {
+
                     legend: {
                         display: false
                     },
 
-                    tooltip: {
-                        callbacks: {
-                            title(items) {
-                                const item = items[0];
-                                const timestamps =
-                                    item.dataset.fullTimestamps;
+                    title: {
+                        display: false
+                    },
 
-                                return timestamps[item.dataIndex];
+                    tooltip: {
+
+                        displayColors: false,
+
+                        callbacks: {
+
+                            title(items) {
+                                return items[0]
+                                    .dataset
+                                    .fullTimestamps[items[0].dataIndex];
                             },
 
-                            label(context) {
-                                const value = context.parsed.y;
-                                const unit = context.dataset.unit;
-
-                                return (
-                                    context.dataset.label +
-                                    ": " +
-                                    value.toFixed(1) +
-                                    unit
-                                );
+                            label(item) {
+                                return `${item.formattedValue} ${unit}`;
                             }
+
                         }
+
                     }
+
                 },
 
                 scales: {
+
                     x: {
-                        title: {
-                            display: true,
-                            text: "Uhrzeit"
+
+                        grid: {
+                            color: "#ececec",
+                            lineWidth: 1
+                        },
+
+                        border: {
+                            display: false
+                        },
+
+                        ticks: {
+                            color: "#666666",
+                            maxTicksLimit: 8
                         }
+
                     },
 
                     y: {
-                        beginAtZero: false
+
+                        grid: {
+                            color: "#ececec",
+                            lineWidth: 1
+                        },
+
+                        border: {
+                            display: false
+                        },
+
+                        ticks: {
+                            color: "#666666",
+                            maxTicksLimit: 6
+                        }
+
                     }
+
                 }
+
             }
+
         }
     );
 }
 
-function updateChart(
-    chart,
-    labels,
-    values,
-    fullTimestamps
-) {
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = values;
-    chart.data.datasets[0].fullTimestamps = fullTimestamps;
-    chart.update();
-}
+function updateChart(chart, labels, values, fullTimestamps) {
 
+    chart.data.labels = labels;
+
+    chart.data.datasets[0].data = values;
+
+    chart.data.datasets[0].fullTimestamps = fullTimestamps;
+
+    chart.update("none");
+
+}
 function initializeRangeSelector() {
     const buttons = document.querySelectorAll(
         "#range-selector button[data-range]"
