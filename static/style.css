@@ -150,3 +150,50 @@ canvas {
     }
 
 }
+
+
+.view-section {
+
+    margin-bottom: 2rem;
+
+}
+
+.view-selector {
+
+    display: flex;
+
+    gap: 1rem;
+
+}
+
+.view-selector button {
+
+    background: none;
+
+    border: none;
+
+    font: inherit;
+
+    color: #666;
+
+    cursor: pointer;
+
+}
+
+.view-selector button::before {
+
+    content: "○ ";
+
+}
+
+.view-selector button.active {
+
+    color: #111;
+
+}
+
+.view-selector button.active::before {
+
+    content: "● ";
+
+}
