@@ -6,52 +6,94 @@
 
     <title>Climate Logger</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-<div class="container">
+<main class="container">
 
-    <h1>Climate Logger</h1>
+    <header class="instrument-header">
+        <h1>Climate Logger</h1>
+        <div class="rule" aria-hidden="true">
+            ────────────────────────────────────────────────────────────
+        </div>
+    </header>
 
-    <div class="cards">
-
-        <div class="card">
-            <h2>🌡 Temperatur</h2>
-            <p id="temperature">-- °C</p>
+    <section class="measurements" aria-label="Aktuelle Messwerte">
+        <div class="measurement-row">
+            <span class="measurement-label">temperature</span>
+            <span id="temperature" class="measurement-value">— °C</span>
         </div>
 
-        <div class="card">
-            <h2>💧 Luftfeuchte</h2>
-            <p id="humidity">-- %</p>
+        <div class="measurement-row">
+            <span class="measurement-label">humidity</span>
+            <span id="humidity" class="measurement-value">— %</span>
         </div>
 
-        <div class="card">
-            <h2>🧭 Luftdruck</h2>
-            <p id="pressure">-- hPa</p>
+        <div class="measurement-row">
+            <span class="measurement-label">pressure</span>
+            <span id="pressure" class="measurement-value">— hPa</span>
         </div>
 
-        <div class="card">
-            <h2>📶 WLAN</h2>
-            <p id="rssi">-- dBm</p>
+        <div class="measurement-row">
+            <span class="measurement-label">signal</span>
+            <span id="rssi" class="measurement-value">— dBm</span>
         </div>
+    </section>
 
-    </div>
+    <section class="range-section" aria-labelledby="range-label">
+        <div id="range-label" class="section-label">RANGE</div>
 
-    <h2>Temperatur</h2>
-    <canvas id="temperatureChart"></canvas>
+        <div
+            id="range-selector"
+            class="range-selector"
+            role="group"
+            aria-label="Zeitraum auswählen"
+        >
+            <button type="button" data-range="1H">1H</button>
+            <button type="button" data-range="6H">6H</button>
+            <button type="button" data-range="1D" class="active">1D</button>
+            <button type="button" data-range="1W">1W</button>
+            <button type="button" data-range="1M">1M</button>
+            <button type="button" data-range="3M">3M</button>
+            <button type="button" data-range="6M">6M</button>
+            <button type="button" data-range="1Y">1Y</button>
+            <button type="button" data-range="5Y">5Y</button>
+            <button type="button" data-range="ALL">ALL</button>
+        </div>
+    </section>
 
-    <h2>Luftfeuchte</h2>
-    <canvas id="humidityChart"></canvas>
+    <section class="chart-section">
+        <h2>temperature</h2>
+        <div class="rule" aria-hidden="true">
+            ────────────────────────────────────────────────────────────
+        </div>
+        <canvas id="temperatureChart"></canvas>
+    </section>
 
-    <h2>Luftdruck</h2>
-    <canvas id="pressureChart"></canvas>
+    <section class="chart-section">
+        <h2>humidity</h2>
+        <div class="rule" aria-hidden="true">
+            ────────────────────────────────────────────────────────────
+        </div>
+        <canvas id="humidityChart"></canvas>
+    </section>
 
-</div>
+    <section class="chart-section">
+        <h2>pressure</h2>
+        <div class="rule" aria-hidden="true">
+            ────────────────────────────────────────────────────────────
+        </div>
+        <canvas id="pressureChart"></canvas>
+    </section>
+
+</main>
 
 <script src="{{ url_for('static', filename='app.js') }}"></script>
 
