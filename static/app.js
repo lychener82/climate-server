@@ -93,13 +93,65 @@ function createChart(canvasId, label, values, labels) {
                 datasets: [{
                     label: label,
                     data: values,
-                    tension: 0.3
+                    tension: 0.3,
+                    pointRadius: 0,
+                    borderWidth: 2,
+                    fill: false
                 }]
             },
 
             options: {
+
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+
+                interaction: {
+                    mode: "index",
+                    intersect: false
+                },
+
+                plugins: {
+
+    legend: {
+        display: false
+    },
+
+    tooltip: {
+
+        callbacks: {
+
+            title(items) {
+
+                const index = items[0].dataIndex;
+                return data[index].timestamp;
+
+            }
+
+        }
+
+    }
+
+},
+
+                scales: {
+
+                    x: {
+
+                        title: {
+                            display: true,
+                            text: "Uhrzeit"
+                        }
+
+                    },
+
+                    y: {
+
+                        beginAtZero: false
+
+                    }
+
+                }
+
             }
         }
     );
