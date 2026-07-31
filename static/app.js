@@ -1,11 +1,13 @@
 let temperatureChart;
 let humidityChart;
 let pressureChart;
+let selectedRange = "1D";
 
 async function loadMeasurements() {
     try {
-        const response = await fetch("/api/measurements?limit=100");
-
+        const response = await fetch(
+    `/api/measurements?range=${encodeURIComponent(selectedRange)}`
+);
         if (!response.ok) {
             console.error("API Error:", response.status);
             return;
