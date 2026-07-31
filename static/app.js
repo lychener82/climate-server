@@ -1,7 +1,6 @@
-let temperatureChart;
-let humidityChart;
-let pressureChart;
+let mainChart;
 let selectedRange = "1D";
+let selectedView = "temperature";
 
 async function loadMeasurements() {
     try {
@@ -91,75 +90,81 @@ function formatDateTime(timestamp) {
 }
 
 function updateCharts(data) {
-    const labels = data.map(measurement =>
-        formatTime(measurement.timestamp)
+
+    const labels = data.map(item =>
+        formatTime(item.timestamp)
     );
 
-    const fullTimestamps = data.map(measurement =>
-        formatDateTime(measurement.timestamp)
+    const timestamps = data.map(item =>
+        item.timestamp
     );
 
-    const temperatures = data.map(measurement =>
-        measurement.temperature
+    const values = data.map(item =>
+        item[selectedView]
     );
 
-    const humidities = data.map(measurement =>
-        measurement.humidity
-    );
+    const units = {
+        temperature: "°C",
+        humidity: "%",
+        pressure: "hPa"
+    };
 
-    const pressures = data.map(measurement =>
-        measurement.pressure
-    );
+    if (!mainChart) {
 
-    if (!temperatureChart) {
-        temperatureChart = createChart(
-            "temperatureChart",
-            "Temperatur",
-            temperatures,
+        mainChart = createChart(
+            "mainChart",
+            selectedView,
             labels,
-            fullTimestamps,
-            " °C"
+            values,
+            timestamps,
+            units[selectedView]
         );
 
-        humidityChart = createChart(
-            "humidityChart",
-            "Luftfeuchtigkeit",
-            humidities,
-            labels,
-            fullTimestamps,
-            " %"
-        );
-
-        pressureChart = createChart(
-            "pressureChart",
-            "Luftdruck",
-            pressures,
-            labels,
-            fullTimestamps,
-            " hPa"
-        );
     } else {
-        updateChart(
-            temperatureChart,
-            labels,
-            temperatures,
-            fullTimestamps
-        );
+
+        mainChart.data.datasets[0].label =
+            selectedView;
 
         updateChart(
-            humidityChart,
+            mainChart,
             labels,
-            humidities,
-            fullTimestamps
+            values,
+            timestamps
         );
 
-        updateChart(
-            pressureChart,
-            labels,
-            pressures,
-            fullTimestamps
-        );
     }
+
+}
+
+function initializeViewSelector() {
+
+    const buttons =
+        document.querySelectorAll(
+            "#view-selector button"
+        );
+
+    buttons.forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            selectedView =
+                button.dataset.view;
+
+            buttons.forEach(item =>
+
+                item.classList.toggle(
+                    "active",
+                    item === button
+                )
+
+            );
+
+            loadMeasurements();
+
+        });
+
+    });
+
 }
 
 function createChart(canvasId, label, labels, values, fullTimestamps, unit) {
@@ -321,6 +326,7 @@ function initializeRangeSelector() {
 }
 
 initializeRangeSelector();
+initializeViewSelector();
 loadMeasurements();
 
 // Alle 60 Sekunden aktualisieren
