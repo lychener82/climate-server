@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import DateTime, Float, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -19,7 +21,7 @@ class Measurement(Base):
         nullable=False
     )
 
-    timestamp: Mapped[object] = mapped_column(
+    timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False
     )
@@ -44,27 +46,27 @@ class Measurement(Base):
         nullable=True
     )
 
-firmware: Mapped[str | None] = mapped_column(
-    String,
-    nullable=True
-)
+    firmware: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True
+    )
 
-uptime: Mapped[int | None] = mapped_column(
-    Integer,
-    nullable=True
-)
+    uptime: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True
+    )
 
-free_heap: Mapped[int | None] = mapped_column(
-    Integer,
-    nullable=True
-)
+    free_heap: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True
+    )
 
-successful_uploads: Mapped[int | None] = mapped_column(
-    Integer,
-    nullable=True
-)
+    successful_uploads: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True
+    )
 
-failed_uploads: Mapped[int | None] = mapped_column(
-    Integer,
-    nullable=True
-)
+    failed_uploads: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True
+    )
