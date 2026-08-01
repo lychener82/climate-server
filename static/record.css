@@ -1,0 +1,403 @@
+:root {
+    --paper: #f7f5ee;
+    --ink: #171713;
+    --secondary: #57564f;
+    --line: #8b8980;
+    --light-line: #c8c5ba;
+
+    --online: #245f35;
+    --offline: #812b2b;
+
+    --page-margin: 22px;
+    --content-width: 1020px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--paper);
+}
+
+body {
+    margin: 0;
+
+    background: var(--paper);
+    color: var(--ink);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        Times,
+        serif;
+
+    font-size: 12px;
+    line-height: 1.25;
+}
+
+button,
+canvas,
+table {
+    font: inherit;
+}
+
+.record {
+    width: min(
+        calc(100% - (2 * var(--page-margin))),
+        var(--content-width)
+    );
+
+    margin:
+        var(--page-margin)
+        0
+        40px
+        var(--page-margin);
+}
+
+.study-navigation {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 28px;
+
+    color: var(--secondary);
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Consolas,
+        monospace;
+
+    font-size: 10px;
+    letter-spacing: 0.06em;
+}
+
+.study-navigation a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.study-navigation a:hover,
+.study-navigation a:focus-visible {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.record-header {
+    text-align: center;
+}
+
+.institution {
+    margin-bottom: 8px;
+
+    font-size: 10px;
+    letter-spacing: 0.16em;
+}
+
+h1,
+h2,
+p {
+    margin: 0;
+}
+
+h1 {
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+}
+
+.record-header p {
+    margin-top: 5px;
+
+    color: var(--secondary);
+
+    font-size: 10px;
+    letter-spacing: 0.12em;
+}
+
+h2 {
+    margin-bottom: 7px;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+}
+
+.double-rule,
+.single-rule {
+    overflow: hidden;
+
+    color: var(--line);
+
+    white-space: nowrap;
+    user-select: none;
+}
+
+.double-rule {
+    margin-top: 14px;
+}
+
+.single-rule {
+    margin: 18px 0;
+    color: var(--light-line);
+}
+
+.station-section,
+.observation-section,
+.summary-section,
+.system-summary {
+    max-width: 100%;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 2px 18px;
+
+    max-width: 660px;
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Consolas,
+        monospace;
+
+    font-size: 11px;
+}
+
+.metadata-grid span:nth-child(odd) {
+    color: var(--secondary);
+}
+
+.status-online {
+    color: var(--online);
+}
+
+.status-offline {
+    color: var(--offline);
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Consolas,
+        monospace;
+
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+    padding: 4px 9px;
+
+    border-right: 1px solid var(--light-line);
+    border-bottom: 1px solid var(--light-line);
+
+    text-align: right;
+    white-space: nowrap;
+}
+
+th:first-child,
+td:first-child {
+    padding-left: 0;
+    text-align: left;
+}
+
+th:last-child,
+td:last-child {
+    border-right: 0;
+}
+
+th {
+    color: var(--secondary);
+
+    font-weight: 400;
+    letter-spacing: 0.06em;
+}
+
+.compatibility-values {
+    display: none;
+}
+
+.section-heading-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 6px;
+}
+
+.section-heading-row h2 {
+    margin: 0;
+}
+
+#record-period-label {
+    color: var(--secondary);
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Consolas,
+        monospace;
+
+    font-size: 10px;
+    letter-spacing: 0.08em;
+}
+
+.period-section {
+    margin-bottom: 20px;
+}
+
+.period-selector,
+.variable-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Consolas,
+        monospace;
+
+    font-size: 10px;
+}
+
+.period-selector button,
+.variable-selector button {
+    appearance: none;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+    color: var(--secondary);
+
+    cursor: pointer;
+}
+
+.period-selector button::before,
+.variable-selector button::before {
+    content: "○ ";
+}
+
+.period-selector button.active,
+.variable-selector button.active,
+.period-selector button:hover,
+.variable-selector button:hover {
+    color: var(--ink);
+}
+
+.period-selector button.active::before,
+.variable-selector button.active::before {
+    content: "● ";
+}
+
+.period-selector button:focus-visible,
+.variable-selector button:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 2px;
+}
+
+.chart-rule {
+    border-top: 1px solid var(--line);
+}
+
+.chart-frame {
+    position: relative;
+
+    width: 100%;
+    height: 330px;
+
+    margin: 8px 0;
+}
+
+.chart-frame canvas {
+    display: block;
+
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.chart-caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding-top: 5px;
+
+    border-top: 1px solid var(--line);
+
+    color: var(--secondary);
+
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Consolas,
+        monospace;
+
+    font-size: 9px;
+    letter-spacing: 0.05em;
+}
+
+@media (max-width: 700px) {
+    :root {
+        --page-margin: 10px;
+    }
+
+    body {
+        font-size: 11px;
+    }
+
+    h1 {
+        font-size: 17px;
+    }
+
+    .record-header {
+        text-align: left;
+    }
+
+    .metadata-grid {
+        grid-template-columns: 130px minmax(0, 1fr);
+        gap: 2px 10px;
+    }
+
+    .section-heading-row,
+    .chart-caption {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .chart-frame {
+        height: 250px;
+    }
+}
