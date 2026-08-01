@@ -189,3 +189,48 @@ def get_measurements():
             "status": "error",
             "message": "Database error"
         }), 500
+
+@bp.get("/api/status")
+def get_status():
+    try:
+        with SessionLocal() as session:
+            statement = (
+                select(Measurement)
+                .order_by(Measurement.timestamp.desc())
+                .limit(1)
+            )
+
+            latest = session.scalars(statement).first()
+
+        if latest is None:
+            return jsonify({
+                "status": "offline",
+                "message": "No measurements available"
+            }), 404
+
+        age_seconds = (
+            datetime.now(timezone.utc)
+            - latest.timestamp
+        ).total_seconds()
+
+        online = age_seconds <= 180
+
+        return jsonify({
+            "status": "online" if online else "offline",
+            "device": latest.device,
+            "last_update": latest.timestamp.isoformat(),
+            "firmware": latest.firmware,
+            "uptime": latest.uptime,
+            "free_heap": latest.free_heap,
+            "successful_uploads": latest.successful_uploads,
+            "failed_uploads": latest.failed_uploads,
+            "rssi": latest.rssi
+        }), 200
+
+    except SQLAlchemyError as error:
+        print(f"Status database error: {error}", flush=True)
+
+        return jsonify({
+            "status": "error",
+            "message": "Database error"
+        }), 500
