@@ -107,6 +107,27 @@ h2 {
     font-variant-numeric: tabular-nums;
 }
 
+.system-section {
+    width: 420px;
+    max-width: 100%;
+    margin-bottom: var(--section-gap);
+}
+
+.system-grid {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 2px 16px;
+}
+
+.system-name {
+    color: var(--muted);
+}
+
+.system-value {
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+}
+
 .range-section,
 .view-section {
     margin-bottom: var(--section-gap);
