@@ -57,17 +57,44 @@ def create_measurement():
         )
 
         measurement = Measurement(
-            device=str(data["device"]),
-            timestamp=timestamp,
-            temperature=float(data["temperature"]),
-            humidity=float(data["humidity"]),
-            pressure=float(data["pressure"]),
-            rssi=(
-                int(data["rssi"])
-                if data.get("rssi") is not None
-                else None
-            )
-        )
+    device=str(data["device"]),
+    timestamp=timestamp,
+    temperature=float(data["temperature"]),
+    humidity=float(data["humidity"]),
+    pressure=float(data["pressure"]),
+
+    rssi=(
+        int(data["rssi"])
+        if data.get("rssi") is not None
+        else None
+    ),
+
+    firmware=data.get("firmware"),
+
+    uptime=(
+        int(data["uptime"])
+        if data.get("uptime") is not None
+        else None
+    ),
+
+    free_heap=(
+        int(data["free_heap"])
+        if data.get("free_heap") is not None
+        else None
+    ),
+
+    successful_uploads=(
+        int(data["successful_uploads"])
+        if data.get("successful_uploads") is not None
+        else None
+    ),
+
+    failed_uploads=(
+        int(data["failed_uploads"])
+        if data.get("failed_uploads") is not None
+        else None
+    )
+)
 
         with SessionLocal() as session:
             session.add(measurement)
@@ -139,6 +166,11 @@ def get_measurements():
                     "humidity": measurement.humidity,
                     "pressure": measurement.pressure,
                     "rssi": measurement.rssi
+                    "firmware": measurement.firmware,
+    "uptime": measurement.uptime,
+    "free_heap": measurement.free_heap,
+    "successful_uploads": measurement.successful_uploads,
+    "failed_uploads": measurement.failed_uploads
                 }
                 for measurement in measurements
             ]
