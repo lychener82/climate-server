@@ -2,13 +2,268 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Climate Logger — Instrument</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='instrument.css') }}"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-    <p>01 / INSTRUMENT</p>
-    <p><a href="{{ url_for('home') }}">← interface studies</a></p>
+
+<main class="instrument">
+
+    <nav class="study-navigation">
+        <a href="{{ url_for('home') }}">
+            ← INTERFACE STUDIES
+        </a>
+
+        <span>01 / INSTRUMENT</span>
+    </nav>
+
+
+    <header class="instrument-header">
+        <div class="header-row">
+            <div>
+                <h1>CLIMATE LOGGER</h1>
+                <p class="subtitle">
+                    ENVIRONMENTAL MONITORING INSTRUMENT
+                </p>
+            </div>
+
+            <span
+                id="header-status"
+                class="header-status"
+                aria-live="polite"
+            >
+                ○ UNKNOWN
+            </span>
+        </div>
+
+        <div class="rule" aria-hidden="true">
+            ════════════════════════════════════════════════════════════════════════════════
+        </div>
+    </header>
+
+
+    <section
+        class="observation-section"
+        aria-labelledby="observation-heading"
+    >
+        <h2 id="observation-heading">
+            CURRENT OBSERVATION
+        </h2>
+
+        <div class="observation-grid">
+            <span class="field-name">TEMP</span>
+            <span id="temperature" class="primary-value">— °C</span>
+
+            <span class="field-name">HUMIDITY</span>
+            <span id="humidity" class="primary-value">— %</span>
+
+            <span class="field-name">PRESSURE</span>
+            <span id="pressure" class="primary-value">— hPa</span>
+
+            <span class="field-name">RSSI</span>
+            <span id="rssi" class="primary-value">— dBm</span>
+        </div>
+    </section>
+
+
+    <div class="rule section-rule" aria-hidden="true">
+        ────────────────────────────────────────────────────────────────────────────────
+    </div>
+
+
+    <section
+        class="system-section"
+        aria-labelledby="system-heading"
+    >
+        <h2 id="system-heading">SYSTEM</h2>
+
+        <div class="system-layout">
+
+            <div class="system-grid">
+                <span class="field-name">STATUS</span>
+                <span
+                    id="system-status"
+                    class="field-value"
+                    aria-live="polite"
+                >
+                    ○ UNKNOWN
+                </span>
+
+                <span class="field-name">DEVICE</span>
+                <span id="system-device" class="field-value">
+                    —
+                </span>
+
+                <span class="field-name">FIRMWARE</span>
+                <span id="system-firmware" class="field-value">
+                    —
+                </span>
+
+                <span class="field-name">UPTIME</span>
+                <span id="system-uptime" class="field-value">
+                    —
+                </span>
+            </div>
+
+            <div class="system-grid">
+                <span class="field-name">FREE HEAP</span>
+                <span id="system-heap" class="field-value">
+                    —
+                </span>
+
+                <span class="field-name">UPLOADS</span>
+                <span id="system-uploads" class="field-value">
+                    —
+                </span>
+
+                <span class="field-name">ERRORS</span>
+                <span id="system-errors" class="field-value">
+                    —
+                </span>
+
+                <span class="field-name">LAST DATA</span>
+                <span id="system-last-update" class="field-value">
+                    —
+                </span>
+            </div>
+
+        </div>
+    </section>
+
+
+    <div class="rule section-rule" aria-hidden="true">
+        ────────────────────────────────────────────────────────────────────────────────
+    </div>
+
+
+    <section class="control-panel">
+
+        <div class="control-group">
+            <h2>RANGE</h2>
+
+            <div
+                id="range-selector"
+                class="selector"
+                role="group"
+                aria-label="Zeitraum auswählen"
+            >
+                <button type="button" data-range="1H">1H</button>
+                <button type="button" data-range="6H">6H</button>
+
+                <button
+                    type="button"
+                    data-range="1D"
+                    class="active"
+                    aria-pressed="true"
+                >
+                    1D
+                </button>
+
+                <button type="button" data-range="1W">1W</button>
+                <button type="button" data-range="1M">1M</button>
+                <button type="button" data-range="3M">3M</button>
+                <button type="button" data-range="6M">6M</button>
+                <button type="button" data-range="1Y">1Y</button>
+                <button type="button" data-range="5Y">5Y</button>
+                <button type="button" data-range="ALL">ALL</button>
+            </div>
+        </div>
+
+
+        <div class="control-group">
+            <h2>CHANNEL</h2>
+
+            <div
+                id="view-selector"
+                class="selector"
+                role="group"
+                aria-label="Messgröße auswählen"
+            >
+                <button
+                    type="button"
+                    data-view="temperature"
+                    class="active"
+                    aria-pressed="true"
+                >
+                    TEMP
+                </button>
+
+                <button
+                    type="button"
+                    data-view="humidity"
+                >
+                    HUMIDITY
+                </button>
+
+                <button
+                    type="button"
+                    data-view="pressure"
+                >
+                    PRESSURE
+                </button>
+            </div>
+        </div>
+
+    </section>
+
+
+    <section
+        class="graph-section"
+        aria-labelledby="graph-heading"
+    >
+        <div class="graph-header">
+            <h2 id="graph-heading">
+                TIME SERIES
+            </h2>
+
+            <span id="graph-description">
+                TEMP / 1D
+            </span>
+        </div>
+
+        <div class="rule" aria-hidden="true">
+            ────────────────────────────────────────────────────────────────────────────────
+        </div>
+
+        <div class="chart-frame">
+            <canvas id="mainChart"></canvas>
+        </div>
+
+        <div class="rule" aria-hidden="true">
+            ────────────────────────────────────────────────────────────────────────────────
+        </div>
+
+        <div class="graph-footer">
+            <span>TIME BASE</span>
+            <span id="time-base-value">1D</span>
+
+            <span>CHANNEL</span>
+            <span id="channel-value">TEMP</span>
+
+            <span>REFRESH</span>
+            <span>60 SEC</span>
+
+            <span>TIME STANDARD</span>
+            <span>UTC</span>
+        </div>
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
 </body>
 </html>
