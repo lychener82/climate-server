@@ -21,6 +21,9 @@ async function loadMeasurements() {
         updateCards(data);
         updateCharts(data);
         updateInstrumentLabels();
+        updateRecordObservation(data);
+        updateRecordSummary(data);
+        updateRecordLabels();
 
     } catch (error) {
         console.error("Fehler beim Laden der Messwerte:", error);
