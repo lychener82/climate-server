@@ -27,6 +27,140 @@ async function loadMeasurements() {
     }
 }
 
+function calculateSummary(values) {
+    const validValues = values.filter(
+        value => Number.isFinite(value)
+    );
+
+    if (validValues.length === 0) {
+        return null;
+    }
+
+    const minimum = Math.min(...validValues);
+    const maximum = Math.max(...validValues);
+
+    const mean =
+        validValues.reduce(
+            (sum, value) => sum + value,
+            0
+        ) / validValues.length;
+
+    return {
+        minimum,
+        mean,
+        maximum,
+        range: maximum - minimum
+    };
+}
+
+function setSummaryRow(prefix, summary, decimals) {
+    if (!summary) {
+        return;
+    }
+
+    const fields = {
+        min: summary.minimum,
+        mean: summary.mean,
+        max: summary.maximum,
+        range: summary.range
+    };
+
+    Object.entries(fields).forEach(([name, value]) => {
+        const element =
+            document.getElementById(
+                `${prefix}-${name}`
+            );
+
+        if (element) {
+            element.textContent =
+                value.toFixed(decimals);
+        }
+    });
+}
+
+function updateRecordSummary(data) {
+    if (!Array.isArray(data) || data.length === 0) {
+        return;
+    }
+
+    const temperatures = data.map(
+        measurement => measurement.temperature
+    );
+
+    const humidities = data.map(
+        measurement => measurement.humidity
+    );
+
+    const pressures = data.map(
+        measurement => measurement.pressure
+    );
+
+    setSummaryRow(
+        "temperature",
+        calculateSummary(temperatures),
+        2
+    );
+
+    setSummaryRow(
+        "humidity",
+        calculateSummary(humidities),
+        2
+    );
+
+    setSummaryRow(
+        "pressure",
+        calculateSummary(pressures),
+        2
+    );
+}
+
+function updateRecordLabels() {
+    const periodNames = {
+        "1H": "1 HOUR",
+        "6H": "6 HOURS",
+        "1D": "1 DAY",
+        "1W": "1 WEEK",
+        "1M": "1 MONTH",
+        "3M": "3 MONTHS",
+        "6M": "6 MONTHS",
+        "1Y": "1 YEAR",
+        "5Y": "5 YEARS",
+        "ALL": "ALL RECORDS"
+    };
+
+    const variableNames = {
+        temperature: "TEMPERATURE",
+        humidity: "HUMIDITY",
+        pressure: "PRESSURE"
+    };
+
+    const period =
+        periodNames[selectedRange] ?? selectedRange;
+
+    const variable =
+        variableNames[selectedView]
+        ?? selectedView.toUpperCase();
+
+    const periodLabel =
+        document.getElementById(
+            "record-period-label"
+        );
+
+    const caption =
+        document.getElementById(
+            "record-chart-caption"
+        );
+
+    if (periodLabel) {
+        periodLabel.textContent = period;
+    }
+
+    if (caption) {
+        caption.textContent =
+            `${variable} OBSERVATIONS — ${period}`;
+    }
+}
+
 function updateRecordObservation(data) {
     if (!Array.isArray(data) || data.length === 0) {
         return;
