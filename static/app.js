@@ -20,6 +20,7 @@ async function loadMeasurements() {
 
         updateCards(data);
         updateCharts(data);
+        updateInstrumentLabels();
 
     } catch (error) {
         console.error("Fehler beim Laden der Messwerte:", error);
@@ -396,6 +397,39 @@ function formatUptime(seconds) {
     ]
         .filter(Boolean)
         .join(" ");
+}
+
+function updateInstrumentLabels() {
+    const rangeLabel =
+        document.getElementById("time-base-value");
+
+    const channelLabel =
+        document.getElementById("channel-value");
+
+    const description =
+        document.getElementById("graph-description");
+
+    if (rangeLabel) {
+        rangeLabel.textContent = selectedRange;
+    }
+
+    const channelNames = {
+        temperature: "TEMP",
+        humidity: "HUMIDITY",
+        pressure: "PRESSURE"
+    };
+
+    const currentChannel =
+        channelNames[selectedView] ?? selectedView.toUpperCase();
+
+    if (channelLabel) {
+        channelLabel.textContent = currentChannel;
+    }
+
+    if (description) {
+        description.textContent =
+            `${currentChannel} / ${selectedRange}`;
+    }
 }
 
 initializeRangeSelector();
