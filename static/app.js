@@ -27,6 +27,46 @@ async function loadMeasurements() {
     }
 }
 
+function updateRecordObservation(data) {
+    if (!Array.isArray(data) || data.length === 0) {
+        return;
+    }
+
+    const latest = data[data.length - 1];
+
+    const temperature =
+        document.getElementById("record-temperature");
+
+    const humidity =
+        document.getElementById("record-humidity");
+
+    const pressure =
+        document.getElementById("record-pressure");
+
+    const rssi =
+        document.getElementById("record-rssi");
+
+    if (temperature) {
+        temperature.textContent =
+            latest.temperature.toFixed(2);
+    }
+
+    if (humidity) {
+        humidity.textContent =
+            latest.humidity.toFixed(2);
+    }
+
+    if (pressure) {
+        pressure.textContent =
+            latest.pressure.toFixed(2);
+    }
+
+    if (rssi) {
+        rssi.textContent =
+            latest.rssi ?? "—";
+    }
+}
+
 function updateCards(data) {
     const latest = data[data.length - 1];
 
