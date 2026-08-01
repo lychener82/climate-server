@@ -43,3 +43,28 @@ class Measurement(Base):
         Integer,
         nullable=True
     )
+
+firmware: Mapped[str | None] = mapped_column(
+    String,
+    nullable=True
+)
+
+uptime: Mapped[int | None] = mapped_column(
+    Integer,
+    nullable=True
+)
+
+free_heap: Mapped[int | None] = mapped_column(
+    Integer,
+    nullable=True
+)
+
+successful_uploads: Mapped[int | None] = mapped_column(
+    Integer,
+    nullable=True
+)
+
+failed_uploads: Mapped[int | None] = mapped_column(
+    Integer,
+    nullable=True
+)
