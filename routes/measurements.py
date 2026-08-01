@@ -7,11 +7,12 @@ from sqlalchemy.exc import SQLAlchemyError
 from database import SessionLocal
 from models import Measurement
 
+
 RANGES = {
     "1H": timedelta(hours=1),
     "6H": timedelta(hours=6),
-    "1D": timedelta(hours=24),
-    "1W": timedelta(days=7),
+    "1D": timedelta(days=1),
+    "1W": timedelta(weeks=1),
     "1M": timedelta(days=30),
     "3M": timedelta(days=90),
     "6M": timedelta(days=180),
@@ -19,7 +20,9 @@ RANGES = {
     "5Y": timedelta(days=365 * 5),
 }
 
+
 bp = Blueprint("measurements", __name__)
+
 
 @bp.post("/api/measurements")
 def create_measurement():
@@ -57,44 +60,48 @@ def create_measurement():
         )
 
         measurement = Measurement(
-    device=str(data["device"]),
-    timestamp=timestamp,
-    temperature=float(data["temperature"]),
-    humidity=float(data["humidity"]),
-    pressure=float(data["pressure"]),
+            device=str(data["device"]),
+            timestamp=timestamp,
+            temperature=float(data["temperature"]),
+            humidity=float(data["humidity"]),
+            pressure=float(data["pressure"]),
 
-    rssi=(
-        int(data["rssi"])
-        if data.get("rssi") is not None
-        else None
-    ),
+            rssi=(
+                int(data["rssi"])
+                if data.get("rssi") is not None
+                else None
+            ),
 
-    firmware=data.get("firmware"),
+            firmware=(
+                str(data["firmware"])
+                if data.get("firmware") is not None
+                else None
+            ),
 
-    uptime=(
-        int(data["uptime"])
-        if data.get("uptime") is not None
-        else None
-    ),
+            uptime=(
+                int(data["uptime"])
+                if data.get("uptime") is not None
+                else None
+            ),
 
-    free_heap=(
-        int(data["free_heap"])
-        if data.get("free_heap") is not None
-        else None
-    ),
+            free_heap=(
+                int(data["free_heap"])
+                if data.get("free_heap") is not None
+                else None
+            ),
 
-    successful_uploads=(
-        int(data["successful_uploads"])
-        if data.get("successful_uploads") is not None
-        else None
-    ),
+            successful_uploads=(
+                int(data["successful_uploads"])
+                if data.get("successful_uploads") is not None
+                else None
+            ),
 
-    failed_uploads=(
-        int(data["failed_uploads"])
-        if data.get("failed_uploads") is not None
-        else None
-    )
-)
+            failed_uploads=(
+                int(data["failed_uploads"])
+                if data.get("failed_uploads") is not None
+                else None
+            )
+        )
 
         with SessionLocal() as session:
             session.add(measurement)
@@ -138,23 +145,23 @@ def get_measurements():
                 "allowed_ranges": allowed_ranges
             }), 400
 
-        with SessionLocal() as session:
-            statement = select(Measurement)
+        statement = select(Measurement)
 
-            if selected_range != "ALL":
-                cutoff = (
-                    datetime.now(timezone.utc)
-                    - RANGES[selected_range]
-                )
-
-                statement = statement.where(
-                    Measurement.timestamp >= cutoff
-                )
-
-            statement = statement.order_by(
-                Measurement.timestamp.asc()
+        if selected_range != "ALL":
+            cutoff = (
+                datetime.now(timezone.utc)
+                - RANGES[selected_range]
             )
 
+            statement = statement.where(
+                Measurement.timestamp >= cutoff
+            )
+
+        statement = statement.order_by(
+            Measurement.timestamp.asc()
+        )
+
+        with SessionLocal() as session:
             measurements = session.scalars(statement).all()
 
             result = [
@@ -165,12 +172,12 @@ def get_measurements():
                     "temperature": measurement.temperature,
                     "humidity": measurement.humidity,
                     "pressure": measurement.pressure,
-                    "rssi": measurement.rssi
+                    "rssi": measurement.rssi,
                     "firmware": measurement.firmware,
-    "uptime": measurement.uptime,
-    "free_heap": measurement.free_heap,
-    "successful_uploads": measurement.successful_uploads,
-    "failed_uploads": measurement.failed_uploads
+                    "uptime": measurement.uptime,
+                    "free_heap": measurement.free_heap,
+                    "successful_uploads": measurement.successful_uploads,
+                    "failed_uploads": measurement.failed_uploads
                 }
                 for measurement in measurements
             ]
