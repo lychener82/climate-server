@@ -2,13 +2,325 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Climate Logger — Meteorological Record</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='record.css') }}"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-    <p>02 / METEOROLOGICAL RECORD</p>
-    <p><a href="{{ url_for('home') }}">← interface studies</a></p>
+
+<main class="record">
+
+    <nav class="study-navigation">
+        <a href="{{ url_for('home') }}">
+            ← INTERFACE STUDIES
+        </a>
+
+        <span>02 / METEOROLOGICAL RECORD</span>
+    </nav>
+
+
+    <header class="record-header">
+        <div class="institution">
+            CLIMATE LOGGER OBSERVATION SERVICE
+        </div>
+
+        <h1>LOCAL METEOROLOGICAL RECORD</h1>
+
+        <p>
+            CONTINUOUS ENVIRONMENTAL OBSERVATIONS
+        </p>
+
+        <div class="double-rule" aria-hidden="true">
+            ════════════════════════════════════════════════════════════════════════════════
+        </div>
+    </header>
+
+
+    <section
+        class="station-section"
+        aria-labelledby="station-heading"
+    >
+        <h2 id="station-heading">STATION INFORMATION</h2>
+
+        <div class="metadata-grid">
+            <span>STATION</span>
+            <span id="system-device">—</span>
+
+            <span>STATUS</span>
+            <span id="system-status">○ UNKNOWN</span>
+
+            <span>INSTRUMENT</span>
+            <span>ESP32-S3 / SHT40 / BMP390</span>
+
+            <span>FIRMWARE</span>
+            <span id="system-firmware">—</span>
+
+            <span>OBSERVATION INTERVAL</span>
+            <span>60 SECONDS</span>
+
+            <span>TIME STANDARD</span>
+            <span>UTC</span>
+
+            <span>LAST OBSERVATION</span>
+            <span id="system-last-update">—</span>
+        </div>
+    </section>
+
+
+    <div class="single-rule" aria-hidden="true">
+        ────────────────────────────────────────────────────────────────────────────────
+    </div>
+
+
+    <section
+        class="observation-section"
+        aria-labelledby="observation-heading"
+    >
+        <h2 id="observation-heading">CURRENT OBSERVATION</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>VARIABLE</th>
+                        <th>VALUE</th>
+                        <th>UNIT</th>
+                        <th>INSTRUMENT</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Air temperature</td>
+                        <td id="record-temperature">—</td>
+                        <td>°C</td>
+                        <td>SHT40</td>
+                    </tr>
+
+                    <tr>
+                        <td>Relative humidity</td>
+                        <td id="record-humidity">—</td>
+                        <td>% RH</td>
+                        <td>SHT40</td>
+                    </tr>
+
+                    <tr>
+                        <td>Atmospheric pressure</td>
+                        <td id="record-pressure">—</td>
+                        <td>hPa</td>
+                        <td>BMP390</td>
+                    </tr>
+
+                    <tr>
+                        <td>Radio signal strength</td>
+                        <td id="record-rssi">—</td>
+                        <td>dBm</td>
+                        <td>ESP32-S3</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Versteckte kompatible IDs für das gemeinsame JavaScript -->
+        <div class="compatibility-values" aria-hidden="true">
+            <span id="temperature"></span>
+            <span id="humidity"></span>
+            <span id="pressure"></span>
+            <span id="rssi"></span>
+        </div>
+    </section>
+
+
+    <div class="single-rule" aria-hidden="true">
+        ────────────────────────────────────────────────────────────────────────────────
+    </div>
+
+
+    <section
+        class="summary-section"
+        aria-labelledby="summary-heading"
+    >
+        <div class="section-heading-row">
+            <h2 id="summary-heading">PERIOD SUMMARY</h2>
+
+            <span id="record-period-label">
+                1 DAY
+            </span>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>VARIABLE</th>
+                        <th>MINIMUM</th>
+                        <th>MEAN</th>
+                        <th>MAXIMUM</th>
+                        <th>RANGE</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Temperature °C</td>
+                        <td id="temperature-min">—</td>
+                        <td id="temperature-mean">—</td>
+                        <td id="temperature-max">—</td>
+                        <td id="temperature-range">—</td>
+                    </tr>
+
+                    <tr>
+                        <td>Humidity % RH</td>
+                        <td id="humidity-min">—</td>
+                        <td id="humidity-mean">—</td>
+                        <td id="humidity-max">—</td>
+                        <td id="humidity-range">—</td>
+                    </tr>
+
+                    <tr>
+                        <td>Pressure hPa</td>
+                        <td id="pressure-min">—</td>
+                        <td id="pressure-mean">—</td>
+                        <td id="pressure-max">—</td>
+                        <td id="pressure-range">—</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+
+    <div class="single-rule" aria-hidden="true">
+        ────────────────────────────────────────────────────────────────────────────────
+    </div>
+
+
+    <section class="period-section">
+        <h2>OBSERVATION PERIOD</h2>
+
+        <div
+            id="range-selector"
+            class="period-selector"
+            role="group"
+            aria-label="Beobachtungszeitraum auswählen"
+        >
+            <button type="button" data-range="1H">1 HOUR</button>
+            <button type="button" data-range="6H">6 HOURS</button>
+
+            <button
+                type="button"
+                data-range="1D"
+                class="active"
+                aria-pressed="true"
+            >
+                1 DAY
+            </button>
+
+            <button type="button" data-range="1W">1 WEEK</button>
+            <button type="button" data-range="1M">1 MONTH</button>
+            <button type="button" data-range="3M">3 MONTHS</button>
+            <button type="button" data-range="1Y">1 YEAR</button>
+            <button type="button" data-range="5Y">5 YEARS</button>
+            <button type="button" data-range="ALL">ALL RECORDS</button>
+        </div>
+    </section>
+
+
+    <section
+        class="chart-section"
+        aria-labelledby="chart-heading"
+    >
+        <div class="section-heading-row">
+            <h2 id="chart-heading">
+                OBSERVATION SERIES
+            </h2>
+
+            <div
+                id="view-selector"
+                class="variable-selector"
+                role="group"
+                aria-label="Messgröße auswählen"
+            >
+                <button
+                    type="button"
+                    data-view="temperature"
+                    class="active"
+                    aria-pressed="true"
+                >
+                    TEMPERATURE
+                </button>
+
+                <button type="button" data-view="humidity">
+                    HUMIDITY
+                </button>
+
+                <button type="button" data-view="pressure">
+                    PRESSURE
+                </button>
+            </div>
+        </div>
+
+        <div class="chart-rule"></div>
+
+        <div class="chart-frame">
+            <canvas id="mainChart"></canvas>
+        </div>
+
+        <div class="chart-caption">
+            <span id="record-chart-caption">
+                TEMPERATURE OBSERVATIONS — 1 DAY
+            </span>
+
+            <span>
+                SOURCE: CLIMATELOGGER / UTC
+            </span>
+        </div>
+    </section>
+
+
+    <div class="single-rule" aria-hidden="true">
+        ────────────────────────────────────────────────────────────────────────────────
+    </div>
+
+
+    <section
+        class="system-summary"
+        aria-labelledby="system-summary-heading"
+    >
+        <h2 id="system-summary-heading">
+            SYSTEM RECORD
+        </h2>
+
+        <div class="metadata-grid">
+            <span>UPTIME</span>
+            <span id="system-uptime">—</span>
+
+            <span>FREE HEAP</span>
+            <span id="system-heap">—</span>
+
+            <span>SUCCESSFUL UPLOADS</span>
+            <span id="system-uploads">—</span>
+
+            <span>FAILED UPLOADS</span>
+            <span id="system-errors">—</span>
+        </div>
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
 </body>
 </html>
