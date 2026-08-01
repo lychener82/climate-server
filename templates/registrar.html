@@ -2,13 +2,270 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Climate Logger — Registrar</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='registrar.css') }}"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-    <p>03 / REGISTRAR</p>
-    <p><a href="{{ url_for('home') }}">← interface studies</a></p>
+
+<main class="registrar">
+
+    <nav class="study-navigation">
+        <a href="{{ url_for('home') }}">
+            ← INTERFACE STUDIES
+        </a>
+
+        <span>03 / REGISTRAR</span>
+    </nav>
+
+
+    <header class="registrar-header">
+        <div class="header-row">
+            <div>
+                <h1>CLIMATE LOGGER</h1>
+
+                <p>
+                    CONTINUOUS ENVIRONMENTAL REGISTRATION
+                </p>
+            </div>
+
+            <div class="recording-state">
+                <span id="registrar-status">
+                    ○ UNKNOWN
+                </span>
+            </div>
+        </div>
+
+        <div class="double-rule" aria-hidden="true">
+            ════════════════════════════════════════════════════════════════════════════════
+        </div>
+    </header>
+
+
+    <section
+        class="record-metadata"
+        aria-label="Aufzeichnungsdaten"
+    >
+        <div class="metadata-grid">
+            <span>STATION</span>
+            <span id="registrar-device">—</span>
+
+            <span>PERIOD</span>
+            <span id="registrar-period">1 DAY</span>
+
+            <span>LAST RECORD</span>
+            <span id="registrar-last-update">—</span>
+
+            <span>TIME STANDARD</span>
+            <span>UTC</span>
+        </div>
+    </section>
+
+
+    <section
+        class="period-section"
+        aria-labelledby="period-heading"
+    >
+        <h2 id="period-heading">PERIOD</h2>
+
+        <div
+            id="registrar-range-selector"
+            class="period-selector"
+            role="group"
+            aria-label="Aufzeichnungszeitraum auswählen"
+        >
+            <button type="button" data-range="1H">
+                1H
+            </button>
+
+            <button type="button" data-range="6H">
+                6H
+            </button>
+
+            <button
+                type="button"
+                data-range="1D"
+                class="active"
+                aria-pressed="true"
+            >
+                1D
+            </button>
+
+            <button type="button" data-range="1W">
+                1W
+            </button>
+
+            <button type="button" data-range="1M">
+                1M
+            </button>
+
+            <button type="button" data-range="3M">
+                3M
+            </button>
+
+            <button type="button" data-range="6M">
+                6M
+            </button>
+
+            <button type="button" data-range="1Y">
+                1Y
+            </button>
+
+            <button type="button" data-range="5Y">
+                5Y
+            </button>
+
+            <button type="button" data-range="ALL">
+                ALL
+            </button>
+        </div>
+    </section>
+
+
+    <section class="registration-sheet">
+
+        <article
+            class="registration-strip"
+            aria-labelledby="temperature-heading"
+        >
+            <header class="strip-header">
+                <div>
+                    <h2 id="temperature-heading">
+                        TEMPERATURE
+                    </h2>
+
+                    <span class="strip-instrument">
+                        SHT40
+                    </span>
+                </div>
+
+                <div class="strip-reading">
+                    <span id="registrar-temperature">—</span>
+                    <span>°C</span>
+                </div>
+            </header>
+
+            <div class="strip-rule" aria-hidden="true"></div>
+
+            <div class="chart-frame">
+                <canvas id="temperatureRegistrarChart"></canvas>
+            </div>
+
+            <footer class="strip-footer">
+                <span id="temperature-min">MIN —</span>
+                <span id="temperature-mean">MEAN —</span>
+                <span id="temperature-max">MAX —</span>
+            </footer>
+        </article>
+
+
+        <article
+            class="registration-strip"
+            aria-labelledby="humidity-heading"
+        >
+            <header class="strip-header">
+                <div>
+                    <h2 id="humidity-heading">
+                        RELATIVE HUMIDITY
+                    </h2>
+
+                    <span class="strip-instrument">
+                        SHT40
+                    </span>
+                </div>
+
+                <div class="strip-reading">
+                    <span id="registrar-humidity">—</span>
+                    <span>% RH</span>
+                </div>
+            </header>
+
+            <div class="strip-rule" aria-hidden="true"></div>
+
+            <div class="chart-frame">
+                <canvas id="humidityRegistrarChart"></canvas>
+            </div>
+
+            <footer class="strip-footer">
+                <span id="humidity-min">MIN —</span>
+                <span id="humidity-mean">MEAN —</span>
+                <span id="humidity-max">MAX —</span>
+            </footer>
+        </article>
+
+
+        <article
+            class="registration-strip"
+            aria-labelledby="pressure-heading"
+        >
+            <header class="strip-header">
+                <div>
+                    <h2 id="pressure-heading">
+                        ATMOSPHERIC PRESSURE
+                    </h2>
+
+                    <span class="strip-instrument">
+                        BMP390
+                    </span>
+                </div>
+
+                <div class="strip-reading">
+                    <span id="registrar-pressure">—</span>
+                    <span>hPa</span>
+                </div>
+            </header>
+
+            <div class="strip-rule" aria-hidden="true"></div>
+
+            <div class="chart-frame">
+                <canvas id="pressureRegistrarChart"></canvas>
+            </div>
+
+            <footer class="strip-footer">
+                <span id="pressure-min">MIN —</span>
+                <span id="pressure-mean">MEAN —</span>
+                <span id="pressure-max">MAX —</span>
+            </footer>
+        </article>
+
+    </section>
+
+
+    <footer class="registrar-footer">
+        <div class="double-rule" aria-hidden="true">
+            ════════════════════════════════════════════════════════════════════════════════
+        </div>
+
+        <div class="footer-grid">
+            <span>SAMPLING INTERVAL</span>
+            <span>60 SEC</span>
+
+            <span>RECORDING MODE</span>
+            <span>CONTINUOUS</span>
+
+            <span>DATA SOURCE</span>
+            <span>CLIMATELOGGER</span>
+
+            <span>REFRESH</span>
+            <span>60 SEC</span>
+        </div>
+    </footer>
+
+</main>
+
+<script src="{{ url_for('static', filename='registrar.js') }}"></script>
+
 </body>
 </html>
