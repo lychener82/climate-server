@@ -325,9 +325,84 @@ function initializeRangeSelector() {
     });
 }
 
+async function loadSystemStatus() {
+    try {
+        const response = await fetch("/api/status");
+
+        if (!response.ok) {
+            setSystemOffline();
+            return;
+        }
+
+        const status = await response.json();
+        updateSystemStatus(status);
+
+    } catch (error) {
+        console.error("Failed to load system status:", error);
+        setSystemOffline();
+    }
+}
+
+function updateSystemStatus(status) {
+    const online = status.status === "online";
+
+    document.getElementById("system-status").textContent =
+        online ? "● ONLINE" : "○ OFFLINE";
+
+    document.getElementById("system-device").textContent =
+        status.device ?? "—";
+
+    document.getElementById("system-firmware").textContent =
+        status.firmware ?? "—";
+
+    document.getElementById("system-uptime").textContent =
+        formatUptime(status.uptime);
+
+    document.getElementById("system-heap").textContent =
+        status.free_heap !== null && status.free_heap !== undefined
+            ? Math.round(status.free_heap / 1024) + " KiB"
+            : "—";
+
+    document.getElementById("system-uploads").textContent =
+        status.successful_uploads ?? "—";
+
+    document.getElementById("system-errors").textContent =
+        status.failed_uploads ?? "—";
+
+    document.getElementById("system-last-update").textContent =
+        status.last_update
+            ? formatDateTime(status.last_update)
+            : "—";
+}
+
+function setSystemOffline() {
+    document.getElementById("system-status").textContent =
+        "○ OFFLINE";
+}
+
+function formatUptime(seconds) {
+    if (seconds === null || seconds === undefined) {
+        return "—";
+    }
+
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    return [
+        days > 0 ? `${days}d` : null,
+        `${String(hours).padStart(2, "0")}h`,
+        `${String(minutes).padStart(2, "0")}m`
+    ]
+        .filter(Boolean)
+        .join(" ");
+}
+
 initializeRangeSelector();
 initializeViewSelector();
 loadMeasurements();
+loadSystemStatus();
 
 // Alle 60 Sekunden aktualisieren
 setInterval(loadMeasurements, 60000);
+setInterval(loadSystemStatus, 60000);
